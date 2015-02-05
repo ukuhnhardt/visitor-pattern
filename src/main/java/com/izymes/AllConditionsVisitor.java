@@ -8,21 +8,21 @@ public class AllConditionsVisitor extends AbstractConditionVisitor {
     }
 
     @Override
-    public void visit(QuotaElement element) {
+    public int visit(QuotaElement element) {
         visits++;
-        super.visit(element);
+        return super.visit(element);
     }
 
     @Override
-    public void visit(BuildResultElement element) {
+    public int visit(BuildResultElement element) {
         visits++;
-        super.visit(element);
+        return super.visit(element);
     }
 
     @Override
-    public void visit(GroupQuotaElement element) {
+    public int visit(GroupQuotaElement element) {
         visits++;
-        super.visit(element);
+        return super.visit(element);
     }
 
 

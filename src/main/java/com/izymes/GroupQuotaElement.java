@@ -17,9 +17,8 @@ public class GroupQuotaElement implements ConditionElement {
     }
 
     @Override
-    public void accept(ConditionVisitor visitor) {
-        System.out.println("accept " + this.getClass().getSimpleName());
-        visitor.visit(this);
+    public int accept(ConditionVisitor visitor) {
+        return visitor.visit(this);
     }
 
 }

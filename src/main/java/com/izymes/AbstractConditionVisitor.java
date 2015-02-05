@@ -10,35 +10,38 @@ public abstract class AbstractConditionVisitor implements ConditionVisitor {
     public abstract boolean getVerdict();
 
     @Override
-    public void visit(QuotaElement element) {
-        System.out.println(StringUtils.repeat("-", visits) + "visit " + element.getClass().getSimpleName());
-        score += element.quota >= element.target ? 1 : 0;
+    public int visit(QuotaElement element) {
+        if (element.quota >= element.target){
+            score++;
+            return 1;
+        }
+        return 0;
     }
 
     @Override
-    public void visit(BuildResultElement element) {
-        System.out.println(StringUtils.repeat("-", visits) + "visit " + element.getClass().getSimpleName());
-        score += element.result ? 1 : 0;
+    public int visit(BuildResultElement element) {
+        if (element.result ){
+            score++;
+            return 1;
+        }
+        return 0;
     }
 
     @Override
-    public void visit(GroupQuotaElement element) {
-        System.out.println(StringUtils.repeat("-", visits) + "visit " + element.getClass().getSimpleName());
+    public int visit(GroupQuotaElement element) {
         for (String group : element.groupApprovals.keySet()){
             if (element.groupApprovals.get(group) < element.quota){
-                return;
+                return 0;
             }
         }
         score += 1;
+        return 1;
     }
 
     @Override
-    public void visit(ConditionCombinerElement element) {
-        System.out.println(StringUtils.repeat("-", visits) + "visit " + element.getClass().getSimpleName());
+    public int visit(ConditionCombinerElement element) {
+        for (ConditionElement e : element.elements) e.accept(this);
+        return 0;
     }
 
-    @Override
-    public void visit(AndElement element) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

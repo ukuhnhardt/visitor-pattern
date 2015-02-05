@@ -1,12 +1,9 @@
 package com.izymes;
 
 public interface ConditionVisitor {
-    public void visit(QuotaElement element);
-    public void visit(BuildResultElement element);
-    public void visit(GroupQuotaElement element);
-    public void visit(ConditionCombinerElement element);
-
-    public void visit(AndElement element);
-
+    public int visit(QuotaElement element);
+    public int visit(BuildResultElement element);
+    public int visit(GroupQuotaElement element);
+    public int visit(ConditionCombinerElement element);
     public boolean getVerdict();
 }

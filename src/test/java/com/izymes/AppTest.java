@@ -59,4 +59,31 @@ public class AppTest{
         allCombined.accept(visitor) ;
         assertTrue(visitor.getVerdict());
     }
+
+    @Test
+    public void testOrConditionsPassCombined()    {
+
+        ConditionElement build = new BuildResultElement(true);
+        ConditionElement quota = new QuotaElement(30, 40);
+        ConditionElement twoCombined = new ConditionCombinerElement(Operation.OR, build, quota);
+        Map<String, Integer> groups = ImmutableMap.of("abba",2, "acdc",1);
+        ConditionElement allCombined = new ConditionCombinerElement(Operation.OR, new GroupQuotaElement(groups, 2), twoCombined);
+        ConditionVisitor visitor = new AndOrVisitor();
+        assertEquals(1, allCombined.accept(visitor));
+    }
+
+    @Test
+    public void testAndConditionsFail()    {
+
+        ConditionElement build = new BuildResultElement(true);
+        ConditionElement quota = new QuotaElement(30, 40);
+        ConditionElement twoCombined = new ConditionCombinerElement(Operation.OR, build, quota);
+        Map<String, Integer> groups = ImmutableMap.of("abba",2, "acdc",1);
+        GroupQuotaElement group = new GroupQuotaElement(groups, 2);
+        ConditionElement allCombined = new ConditionCombinerElement(Operation.AND, group, twoCombined);
+        ConditionVisitor visitor = new AndOrVisitor();
+        int result = allCombined.accept(visitor);
+        assertEquals(0, result);
+    }
+
 }

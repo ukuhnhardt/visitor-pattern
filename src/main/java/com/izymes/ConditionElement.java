@@ -1,5 +1,10 @@
 package com.izymes;
 
 public interface ConditionElement {
-    public void accept(ConditionVisitor visitor );
+    /**
+     *
+     * @param visitor
+     * @return 1 if result true, 0 if result false
+     */
+    public int accept(ConditionVisitor visitor );
 }
