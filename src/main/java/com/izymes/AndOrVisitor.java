@@ -9,16 +9,19 @@ public class AndOrVisitor extends AbstractConditionVisitor {
 
     @Override
     public int visit(ConditionCombinerElement element) {
-        int e1 = element.elements.get(0).accept(this);
-        int e2 = element.elements.get(1).accept(this);
+        int score = 0;
+        int size = element.elements.size();
+        for (ConditionElement e : element.elements){
+            score += e.accept(this);
+        }
         switch (element.operation) {
             case AND:
-                if (e1 + e2 == 2) {
+                if (score == size) {
                     return 1;
                 }
                 break;
             case OR:
-                if (e1 + e2 >= 1) {
+                if (score >= 1) {
                     return 1;
                 }
         }
