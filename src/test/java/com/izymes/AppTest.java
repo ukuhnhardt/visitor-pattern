@@ -1,6 +1,9 @@
 package com.izymes;
 
 
+import com.bpodgursky.jbool_expressions.Expression;
+import com.bpodgursky.jbool_expressions.parsers.ExprParser;
+import com.bpodgursky.jbool_expressions.rules.RuleSet;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
@@ -96,6 +99,19 @@ public class AppTest{
         assertEquals(0, result);
     }
     @Test
+    public void testAndConditionsPass_tree()    {
+
+        ConditionElement build = new BuildResultElement(true);
+        ConditionElement quota = new QuotaElement(50, 40);
+        ConditionElement twoCombined = new ConditionCombinerElement(Operation.AND, build, quota);
+        Map<String, Integer> groups = ImmutableMap.of("abba",2, "acdc",1);
+        GroupQuotaElement group = new GroupQuotaElement(groups, 2);
+        ConditionElement allCombined = new ConditionCombinerElement(Operation.OR, group, twoCombined);
+        ConditionVisitor visitor = new AndOrVisitor();
+        int result = allCombined.accept(visitor);
+        assertEquals(1, result);
+    }
+    @Test
     public void testAndConditionsFail()    {
 
         ConditionElement build = new BuildResultElement(true);
@@ -106,6 +122,35 @@ public class AppTest{
         ConditionVisitor visitor = new AndOrVisitor();
         int result = allCombined.accept(visitor);
         assertEquals(0, result);
+    }
+
+
+    @Test
+    public void testExpressionParser_Fail(){
+        Expression<String> expression = ExprParser.parse("B & ( Q & G )");
+        ConditionElement quota = new QuotaElement(40, 40);
+        ConditionVisitor aVisitor = new AllConditionsVisitor();
+        Map<String, Integer> groups = ImmutableMap.of("abba",2, "acdc",1);
+        GroupQuotaElement group = new GroupQuotaElement(groups, 2);
+        ConditionVisitor gVisitor = new AllConditionsVisitor();
+        Expression<String> ass = RuleSet.assign(expression, ImmutableMap.of("B", Boolean.TRUE
+                , "Q", quota.accept(aVisitor) > 0
+                , "G", group.accept(gVisitor) > 0) );
+        assertFalse(Boolean.valueOf(ass.toString()) );
+    }
+
+    @Test
+    public void testExpressionParser_Pass(){
+        Expression<String> expression = ExprParser.parse("B & ( Q | G )");
+        ConditionElement quota = new QuotaElement(40, 40);
+        ConditionVisitor aVisitor = new AllConditionsVisitor();
+        Map<String, Integer> groups = ImmutableMap.of("abba",2, "acdc",1);
+        GroupQuotaElement group = new GroupQuotaElement(groups, 2);
+        ConditionVisitor gVisitor = new AllConditionsVisitor();
+        Expression<String> ass = RuleSet.assign(expression, ImmutableMap.of("B", Boolean.TRUE
+                , "Q", quota.accept(aVisitor) > 0
+                , "G", group.accept(gVisitor) > 0) );
+        assertTrue(Boolean.valueOf(ass.toString()) );
     }
 
 }
